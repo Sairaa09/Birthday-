@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday</title>
+<style>
+  :root{
+    --bg: #0f172a;
+    --card: #fff;
+    --accent: #ff6b6b;
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, system-ui, sans-serif;
+    background: linear-gradient(180deg,#0b1220 0%,#10203a 100%);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:900px;
+    min-height:560px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    border-radius:18px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.7);
+    padding:28px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .center{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    text-align:center;
+  }
+
+  button{
+    background:linear-gradient(90deg,#ff9a9e,#fad0c4);
+    border:none;
+    padding:12px 18px;
+    font-weight:600;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    transition:transform .15s ease;
+  }
+  button:active{ transform:scale(.98); }
+
+  .hidden{ display:none; }
+
+  /* Big heading style */
+  .bigText{
+    font-size:48px;
+    font-weight:800;
+    letter-spacing:1px;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+
+  /* flower rain */
+  .flowerLayer{
+    pointer-events:none;
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+  }
+  .flower{
+    position:absolute;
+    top:-10%;
+    font-size:24px;
+    opacity:0.95;
+    animation:fall linear forwards;
+    user-select:none;
+  }
+  @keyframes fall{
+    to{
+      transform: translateY(120vh) rotateZ(360deg);
+      opacity:0.98;
+    }
+  }
+
+  /* cake and candle */
+  .cakeWrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+  .cake{
+    font-size:110px;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+    transition:transform .25s ease;
+  }
+  .candle{
+    font-size:36px;
+    cursor:pointer;
+    transition:opacity .35s ease, transform .25s ease;
+  }
+  .candleGone{
+    opacity:0;
+    transform:scale(.6) translateY(-10px);
+    pointer-events:none;
+  }
+
+  /* card */
+  .cardWrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+  }
+  .card{
+    width:420px;
+    height:260px;
+    background: linear-gradient(180deg,#fff,#f7f7f7);
+    color:#111;
+    border-radius:18px;
+    box-shadow: 0 14px 40px rgba(2,6,23,0.5);
+    transform-origin:center top;
+    transition: transform .7s cubic-bezier(.2,.9,.3,1), height .4s ease;
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+  }
+  .cardClosed{
+    transform: perspective(600px) rotateX(80deg);
+    height:30px;
+  }
+  .cardInner{
+    padding:22px;
+  }
+  .cardTitle{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .cardText{
+    font-size:16px;
+    line-height:1.5;
+  }
+
+  /* small nav */
+  .nav{
+    position:absolute;
+    top:18px;
+    right:20px;
+    display:flex;
+    gap:10px;
+  }
+
+  /* small flourish */
+  .subText{
+    font-size:14px;
+    opacity:.9;
+  }
+
+  /* responsive */
+  @media(max-width:520px){
+    .bigText{ font-size:28px; }
+    .cake{ font-size:80px; }
+    .card{ width:320px; height:220px; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <button id="btnHome">Home</button>
+  </div>
+
+  <!-- Page 1 -->
+  <div id="pageIntro" class="center">
+    <div style="fontSize:18px" class="subText">Birthday surprise ready? Start below</div>
+    <div class="bigText">Happy Birthday!</div>
+    <button id="btnWish">Click to see your wish</button>
+  </div>
+
+  <!-- Wish shown with next -->
+  <div id="pageWish" class="center hidden">
+    <div style="fontSize:20px" class="subText">A special wish just for you</div>
+    <div style="fontSize:24px; fontWeight:700">Janamdin Mubarak ho, Madam jii 🎉</div>
+    <button id="btnFlowers">Next</button>
+  </div>
+
+  <!-- Flower rain and big text -->
+  <div id="pageFlowers" class="center hidden">
+    <div class="bigText">Happy Birthday Madam jii</div>
+    <div class="subText">A shower of flowers for your day</div>
+    <button id="btnCake">Next</button>
+    <div class="flowerLayer" id="flowerLayer"></div>
+  </div>
+
+  <!-- Cake -->
+  <div id="pageCake" class="center hidden">
+    <div class="cakeWrap">
+      <div id="candle" class="candle" title="Click the candle to blow it out">🕯️</div>
+      <div id="cake" class="cake">🎂</div>
+      <div class="subText">Click the candle to blow it out</div>
+    </div>
+    <button id="btnCard">Next</button>
+  </div>
+
+  <!-- Card -->
+  <div id="pageCard" class="center hidden">
+    <div class="cardWrap">
+      <div id="card" class="card cardClosed" title="Click to open or close the card">
+        <div class="cardInner">
+          <div class="cardTitle">Special Birthday Wishes</div>
+          <div class="cardText">
+            Aapka din khushiyon se bhara ho. Har naya saal zindagi mein naye mauqe, naye sapne aur nayi kamyabi le aaye.
+            Dil se Janamdin Mubarak ho, Madam jii.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="marginTop:16px" class="subText">Card opens and closes automatically. Click to toggle.</div>
+  </div>
+
+</div>
+
+<script>
+  // Elements
+  const pageIntro = document.getElementById('pageIntro');
+  const pageWish = document.getElementById('pageWish');
+  const pageFlowers = document.getElementById('pageFlowers');
+  const pageCake = document.getElementById('pageCake');
+  const pageCard = document.getElementById('pageCard');
+
+  const btnWish = document.getElementById('btnWish');
+  const btnFlowers = document.getElementById('btnFlowers');
+  const btnCake = document.getElementById('btnCake');
+  const btnCard = document.getElementById('btnCard');
+  const btnHome = document.getElementById('btnHome');
+
+  const flowerLayer = document.getElementById('flowerLayer');
+  const candle = document.getElementById('candle');
+  const card = document.getElementById('card');
+
+  // simple page switch
+  function showPage(page){
+    [pageIntro,pageWish,pageFlowers,pageCake,pageCard].forEach(p=>p.classList.add('hidden'));
+    page.classList.remove('hidden');
+  }
+
+  btnWish.addEventListener('click',()=> showPage(pageWish));
+  btnFlowers.addEventListener('click',()=>{
+    showPage(pageFlowers);
+    startFlowerRain();
+  });
+  btnCake.addEventListener('click',()=> showPage(pageCake));
+  btnCard.addEventListener('click',()=> showPage(pageCard));
+  btnHome.addEventListener('click',()=> showPage(pageIntro));
+
+  // Flower rain generator
+  let flowerTimer;
+  function startFlowerRain(){
+    // avoid multiple starts
+    if(flowerLayer.dataset.running) return;
+    flowerLayer.dataset.running = '1';
+    const emojis = ['🌸','🌺','🌼','🌻','💮','🌷','🥀'];
+    const count = 24;
+    for(let i=0;i<count;i++){
+      createFlower(i, emojis[i % emojis.length]);
+    }
+    // keep adding some more for gentle effect
+    flowerTimer = setInterval(()=> {
+      const e = emojis[Math.floor(Math.random()*emojis.length)];
+      createFlower(null,e);
+    },1200);
+  }
+
+  function createFlower(index, emoji){
+    const span = document.createElement('span');
+    span.className = 'flower';
+    span.innerText = emoji;
+    const left = Math.random()*100; // %
+    const delay = Math.random()*2; // s
+    const duration = 6 + Math.random()*6; // s
+    const size = 18 + Math.random()*30; // px
+    span.style.left = left + '%';
+    span.style.fontSize = size + 'px';
+    span.style.animationDuration = duration + 's';
+    span.style.animationDelay = delay + 's';
+    flowerLayer.appendChild(span);
+
+    // remove after animation done
+    setTimeout(()=> {
+      span.remove();
+    }, (delay + duration + .2) * 1000);
+  }
+
+  // Candle click to blow out
+  candle.addEventListener('click', ()=> {
+    if(candle.classList.contains('candleGone')) return;
+    // small effect then remove
+    candle.classList.add('candleGone');
+    // subtle applause sound using WebAudio simple pop (no external files)
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.value = 0.0025;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      o.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.18);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.2);
+      setTimeout(()=> { o.stop(); ctx.close(); }, 250);
+    }catch(e){
+      // audio not allowed some browsers
+    }
+  });
+
+  // Card toggle auto and on click
+  let cardOpen = false;
+  function setCard(open){
+    cardOpen = open;
+    if(open){
+      card.classList.remove('cardClosed');
+    }else{
+      card.classList.add('cardClosed');
+    }
+  }
+
+  card.addEventListener('click', ()=> {
+    setCard(!cardOpen);
+  });
+
+  // Auto toggle every 3.5 seconds while on card page
+  let autoCardTimer;
+  function startAutoCard(){
+    stopAutoCard();
+    setCard(false);
+    autoCardTimer = setInterval(()=> {
+      setCard(!cardOpen);
+    }, 3500);
+  }
+  function stopAutoCard(){
+    if(autoCardTimer) clearInterval(autoCardTimer);
+  }
+
+  // start auto toggle when pageCard shows, stop otherwise
+  const observer = new MutationObserver(()=> {
+    if(!pageCard.classList.contains('hidden')){
+      startAutoCard();
+    }else{
+      stopAutoCard();
+    }
+  });
+  observer.observe(pageCard, { attributes:true, attributeFilter:['class'] });
+
+  // initial state
+  showPage(pageIntro);
+
+  // small accessibility: allow Enter key to trigger main buttons
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Enter'){
+      const visible = [...document.querySelectorAll('.wrap > div')].find(d => !d.classList.contains('hidden'));
+      if(visible === pageIntro) btnWish.click();
+      else if(visible === pageWish) btnFlowers.click();
+      else if(visible === pageFlowers) btnCake.click();
+      else if(visible === pageCake) btnCard.click();
+    }
+  });
+
+  // Optional: if user reaches cake page, ensure candle is visible again
+  const cakeObserver = new MutationObserver(()=> {
+    if(!pageCake.classList.contains('hidden')){
+      candle.classList.remove('candleGone');
+    }
+  });
+  cakeObserver.observe(pageCake, { attributes:true, attributeFilter:['class'] });
+
+</script>
+</body>
+</html>
